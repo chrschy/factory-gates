@@ -1,0 +1,15 @@
+{
+  "name": "factory-gates-dev",
+  "description": "Development marketplace for the factory-gates plugin",
+  "owner": {
+    "name": "Christopher Schymura"
+  },
+  "plugins": [
+    {
+      "name": "factory-gates",
+      "description": "Dex Horthy's 4-gate model (Product, Architecture, Program Design, Vertical Slices) as explicit approval checkpoints on top of Superpowers.",
+      "version": "0.1.0",
+      "source": "./"
+    }
+  ]
+}
