@@ -20,7 +20,13 @@ resolve_superpowers_dir() {
         exit 1
     fi
 
-    find "$cache_root" -mindepth 1 -maxdepth 1 -type d | sort -V | tail -1
+    local version_dir
+    version_dir="$(find "$cache_root" -mindepth 1 -maxdepth 1 -type d | sort -V | tail -1)"
+    if [ -z "$version_dir" ]; then
+        echo "ERROR: No version directories found in $cache_root" >&2
+        exit 1
+    fi
+    echo "$version_dir"
 }
 
 # Resolve the factory-gates plugin directory (this repo's root).
@@ -57,7 +63,7 @@ run_turn() {
     (
         cd "$project_dir"
         timeout 300 claude -p "$prompt" \
-            "${continue_flag[@]}" \
+            "${continue_flag[@]+"${continue_flag[@]}"}" \
             --plugin-dir "$superpowers_dir" \
             --plugin-dir "$factory_gates_dir" \
             --dangerously-skip-permissions \
