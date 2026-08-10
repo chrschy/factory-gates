@@ -47,10 +47,19 @@ for scenario in "${SCENARIOS[@]}"; do
         TRIAL_DIR="$RUN_DIR/$scenario/trial-$trial_num"
         echo ">>> Running $scenario trial $trial_num..."
         "$SCRIPT_DIR/run-trial.sh" "$scenario" "$TRIAL_DIR" || true
-        RESULT_FILES+=("$TRIAL_DIR/result.json")
+        if [ -f "$TRIAL_DIR/result.json" ]; then
+            RESULT_FILES+=("$TRIAL_DIR/result.json")
+        else
+            echo "WARNING: no result.json for $scenario trial $trial_num (script likely crashed)" >&2
+        fi
         echo ""
     done
 done
+
+if [ "${#RESULT_FILES[@]}" -eq 0 ]; then
+    echo "ERROR: no trials produced results" >&2
+    exit 1
+fi
 
 echo "=== Summary ==="
 jq -s '
