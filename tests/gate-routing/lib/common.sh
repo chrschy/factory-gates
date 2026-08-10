@@ -69,6 +69,7 @@ run_turn() {
             --dangerously-skip-permissions \
             --max-turns 3 \
             --output-format stream-json \
+            --verbose \
             > "$log_file" 2>&1 || true
     )
 }
