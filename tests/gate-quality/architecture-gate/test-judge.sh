@@ -8,6 +8,7 @@ set -uo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 # shellcheck source=lib/judge.sh
 source "$SCRIPT_DIR/lib/judge.sh"
+set +e
 
 PASS=0
 FAIL=0
@@ -66,6 +67,16 @@ assert_eq "header present but no Status line -> unparseable" "unparseable" "$(pa
 
 : > "$TMPFILE"
 assert_eq "empty file -> unparseable" "unparseable" "$(parse_judge_verdict "$TMPFILE")"
+
+cat > "$TMPFILE" <<'EOF'
+## Architecture Doc Review
+
+**Status:** Approved | Issues Found
+
+**Issues (if any):**
+- [Category]: [specific issue] -- [why it would block program-design-gate]
+EOF
+assert_eq "placeholder Status line -> unparseable" "unparseable" "$(parse_judge_verdict "$TMPFILE")"
 
 # --- build_judge_prompt ---
 

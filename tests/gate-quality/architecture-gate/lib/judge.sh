@@ -67,9 +67,11 @@ parse_judge_verdict() {
         echo "unparseable"
         return
     fi
-    if grep -qE '\*\*Status:\*\*[[:space:]]*Approved' "$output_file" 2>/dev/null; then
+    local status_line
+    status_line="$(grep -E '^\*\*Status:\*\*' "$output_file" 2>/dev/null | head -1)"
+    if printf '%s' "$status_line" | grep -qE '^\*\*Status:\*\*[[:space:]]*Approved[[:space:]]*$'; then
         echo "pass"
-    elif grep -qE '\*\*Status:\*\*[[:space:]]*Issues Found' "$output_file" 2>/dev/null; then
+    elif printf '%s' "$status_line" | grep -qE '^\*\*Status:\*\*[[:space:]]*Issues Found[[:space:]]*$'; then
         echo "fail"
     else
         echo "unparseable"
