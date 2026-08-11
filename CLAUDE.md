@@ -59,6 +59,31 @@ Applies to PR descriptions, issue bodies, commit messages, and skill prose:
 
 Repo merge settings: squash-merge only (merge commits and rebase-merge are disabled), branches are deleted on merge.
 
+### Cutting a release
+
+Releases are automated but manually triggered — nothing ships without you
+asking for it:
+
+1. **One-time setup:** create a Personal Access Token from your own
+   (admin) GitHub account with `repo` scope (classic) or `contents: write`
+   (fine-grained), then add it as a repository secret named `RELEASE_PAT`
+   (Settings → Secrets and variables → Actions → New repository secret).
+   This is what lets the release workflow push past `main`'s branch
+   protection — the same admin-bypass mechanism documented above, just
+   invoked by a script instead of by hand. Without this secret, the
+   workflow still works in dry-run mode; it only fails (with a clear
+   error, not a cryptic git-auth failure) if you try a real release
+   without it.
+2. **Trigger a release:** from the Actions tab, run the "Release" workflow
+   (or `gh workflow run release.yml`). Leave `dry_run` unchecked for a
+   real release, or check it to preview the computed version and release
+   notes without changing anything.
+3. The workflow computes the next version from Conventional Commits since
+   the last tag (see `docs/superpowers/specs/2026-08-11-automated-release-versioning-design.md`
+   for the exact bump rules), bumps `plugin.json`/`marketplace.json`,
+   commits, tags `vX.Y.Z`, and publishes a GitHub Release with generated
+   notes.
+
 ## Testing
 
 `tests/gate-routing/` empirically tests whether the one real skill-routing conflict in this plugin (`brainstorming` → `architecture-gate`) resolves the way the README claims. These are real `claude -p` sessions against a live model — not mocked, non-deterministic, and they cost real tokens. See `tests/gate-routing/README.md` for how to run and interpret them.
