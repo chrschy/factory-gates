@@ -84,11 +84,16 @@ assert_eq "resets patch on minor bump" "1.3.0" "$(compute_next_version "1.2.9" 0
 
 # --- version_gt ---
 
-version_gt "1.2.3" "1.2.2"; assert_true "1.2.3 > 1.2.2" "$?"
-version_gt "1.3.0" "1.2.9"; assert_true "1.3.0 > 1.2.9" "$?"
-version_gt "2.0.0" "1.9.9"; assert_true "2.0.0 > 1.9.9" "$?"
-version_gt "1.2.3" "1.2.3"; assert_false "1.2.3 not > 1.2.3 (equal)" "$?"
-version_gt "1.2.2" "1.2.3"; assert_false "1.2.2 not > 1.2.3" "$?"
+if version_gt "1.2.3" "1.2.2"; then rc=0; else rc=1; fi
+assert_true "1.2.3 > 1.2.2" "$rc"
+if version_gt "1.3.0" "1.2.9"; then rc=0; else rc=1; fi
+assert_true "1.3.0 > 1.2.9" "$rc"
+if version_gt "2.0.0" "1.9.9"; then rc=0; else rc=1; fi
+assert_true "2.0.0 > 1.9.9" "$rc"
+if version_gt "1.2.3" "1.2.3"; then rc=0; else rc=1; fi
+assert_false "1.2.3 not > 1.2.3 (equal)" "$rc"
+if version_gt "1.2.2" "1.2.3"; then rc=0; else rc=1; fi
+assert_false "1.2.2 not > 1.2.3" "$rc"
 
 echo ""
 echo "Passed: $PASS, Failed: $FAIL"

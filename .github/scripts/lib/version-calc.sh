@@ -3,7 +3,7 @@
 # Commit messages. No git/gh calls -- sourced and unit-tested in isolation
 # by tests/release/test-version-calc.sh.
 
-set -uo pipefail
+set -euo pipefail
 
 # Classify a single commit's full message (header + body) into one of:
 # breaking, feat, fix, other. Reads the message from argument $1.
