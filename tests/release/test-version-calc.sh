@@ -87,8 +87,13 @@ assert_eq "resets patch on minor bump" "1.3.0" "$(compute_next_version "1.2.9" 0
 rc=0; (compute_next_version "not-a-version" 0 0 1) >/dev/null 2>&1 || rc=$?
 assert_false "compute_next_version rejects invalid version string" "$rc"
 
-rc=0; (version_gt "1.2.3" "not-a-version") >/dev/null 2>&1 || rc=$?
-assert_false "version_gt rejects invalid second argument" "$rc"
+rc=0
+version_gt "1.2.3" "not-a-version" || rc=$?
+assert_eq "version_gt propagates parse_version failure (2nd arg invalid) - exact exit 1" "1" "$rc"
+
+rc=0
+version_gt "not-a-version" "1.2.3" || rc=$?
+assert_eq "version_gt propagates parse_version failure (1st arg invalid) - exact exit 1" "1" "$rc"
 
 # --- version_gt ---
 
