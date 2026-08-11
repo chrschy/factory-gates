@@ -82,6 +82,14 @@ assert_eq "only other commits -> patch fallback" "1.2.4" "$(compute_next_version
 assert_eq "resets minor/patch on major bump" "2.0.0" "$(compute_next_version "1.9.9" 1 0 0)"
 assert_eq "resets patch on minor bump" "1.3.0" "$(compute_next_version "1.2.9" 0 1 0)"
 
+# --- error handling (regression: parse_version failures must propagate) ---
+
+rc=0; (compute_next_version "not-a-version" 0 0 1) >/dev/null 2>&1 || rc=$?
+assert_false "compute_next_version rejects invalid version string" "$rc"
+
+rc=0; (version_gt "1.2.3" "not-a-version") >/dev/null 2>&1 || rc=$?
+assert_false "version_gt rejects invalid second argument" "$rc"
+
 # --- version_gt ---
 
 if version_gt "1.2.3" "1.2.2"; then rc=0; else rc=1; fi

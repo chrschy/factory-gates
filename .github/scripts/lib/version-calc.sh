@@ -51,8 +51,9 @@ compute_next_version() {
     local has_feat="$3"
     local has_fix="$4"
 
-    local major minor patch
-    read -r major minor patch <<< "$(parse_version "$current")"
+    local major minor patch parsed
+    parsed="$(parse_version "$current")" || return 1
+    read -r major minor patch <<< "$parsed"
 
     if [ "$has_breaking" = "1" ]; then
         if [ "$major" -ge 1 ]; then
@@ -72,9 +73,11 @@ compute_next_version() {
 
 # Return 0 (true) if version $1 is strictly greater than version $2.
 version_gt() {
-    local a_major a_minor a_patch b_major b_minor b_patch
-    read -r a_major a_minor a_patch <<< "$(parse_version "$1")"
-    read -r b_major b_minor b_patch <<< "$(parse_version "$2")"
+    local a_major a_minor a_patch b_major b_minor b_patch parsed_a parsed_b
+    parsed_a="$(parse_version "$1")" || return 1
+    read -r a_major a_minor a_patch <<< "$parsed_a"
+    parsed_b="$(parse_version "$2")" || return 1
+    read -r b_major b_minor b_patch <<< "$parsed_b"
 
     if [ "$a_major" -gt "$b_major" ]; then return 0; fi
     if [ "$a_major" -lt "$b_major" ]; then return 1; fi
