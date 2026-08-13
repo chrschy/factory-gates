@@ -56,7 +56,10 @@ run_judge() {
     local output_file="$2"
     local prompt
     prompt="$(build_judge_prompt "$doc_path")"
-    timeout 120 claude -p "$prompt" --dangerously-skip-permissions > "$output_file" 2>&1 || true
+    timeout 120 claude -p "$prompt" --dangerously-skip-permissions \
+        --disallowedTools "Bash,Read,Write,Edit,NotebookEdit,Glob,Grep,WebFetch,WebSearch,Task,TodoWrite,ExitPlanMode" \
+        --strict-mcp-config \
+        > "$output_file" 2>&1 || true
 }
 
 # Parse a judge output file into "pass", "fail", or "unparseable".
