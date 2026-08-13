@@ -28,7 +28,7 @@ You MUST create a task for each of these and complete them in order:
 3. **Propose 2-3 architectural approaches** with tradeoffs (same pattern as brainstorming's product approaches) — e.g. where the boundary sits, sync vs. async, which system owns which data, monolith vs. new service
 4. **Present the architecture** in sections: component responsibilities, data models (shape, not full schema — only what crosses a component boundary), cross-cutting constraints (auth, versioning, latency budgets, backwards compatibility, external dependencies), and multi-repo/multi-service coordination if relevant. Get approval section by section for complex features.
 5. **Write the doc** — `docs/superpowers/specs/YYYY-MM-DD-<topic>-architecture.md`, commit
-6. **Self-review:** any component with an undefined boundary? Any data model referenced but not specified? Any constraint implied by the product spec but missing here?
+6. **Self-review:** any component with an undefined boundary? Any data model referenced but not specified? Any constraint implied by the product spec but missing here? For each "Open questions" entry, re-read the spec section it cites — does the spec actually leave this open, or does it already commit to an answer? A fabricated open question is worse than an empty section.
 7. **User review gate** — ask the user to review the written doc before proceeding
 8. **Next:** invoke `program-design-gate`. Do NOT invoke `writing-plans` directly — `program-design-gate` is Gate 3 and comes first.
 
@@ -57,5 +57,5 @@ You MUST create a task for each of these and complete them in order:
 [Only if relevant — which repos/services are touched, in what order they must ship]
 
 ## Open questions the product spec left open
-[Anything brainstorming's spec left ambiguous that architecture forced a decision on]
+[Only include an entry here if you can point to the specific spec section that was genuinely ambiguous — re-read it before writing this section to confirm. If the spec already committed to an answer, that is not an open question, even if architecture had to restate or elaborate on it. If nothing was left open, write "None — the spec fully specified this."]
 ```
