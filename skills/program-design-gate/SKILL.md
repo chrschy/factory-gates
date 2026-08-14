@@ -29,7 +29,7 @@ You MUST create a task for each of these and complete them in order:
 4. **Present as one reviewable document**; explicitly flag anywhere the architecture doc underspecified something and you had to make a call
 5. **Get explicit approval**
 6. **Write the doc** — `docs/superpowers/specs/YYYY-MM-DD-<topic>-program-design.md`, commit
-7. **Self-review:** does every signature referenced in one part of the doc get defined somewhere else in it? Any component from the architecture doc with no corresponding signatures here?
+7. **Self-review:** does every signature referenced in one part of the doc get defined somewhere else in it? Any component from the architecture doc with no corresponding signatures here? For each "Deviations from architecture" entry, re-read the architecture section it cites — does it actually leave this underspecified, or does it already commit to an answer? A fabricated deviation is worse than an empty section.
 8. **User review gate** — ask the user to review the written doc before proceeding
 9. **Next:** invoke `superpowers:writing-plans`, and explicitly tell it this document is the interface contract — task-level signatures in the plan MUST match it exactly, not drift from it.
 
@@ -56,5 +56,5 @@ You MUST create a task for each of these and complete them in order:
 [Main flows: which function calls which, across which components]
 
 ## Deviations from architecture
-[Anything the architecture doc left open that got resolved here]
+[Only include an entry here if you can point to the specific architecture doc section that was genuinely underspecified — re-read it before writing this section to confirm. If the architecture doc already specified an answer, that is not a deviation, even if program design had to restate or elaborate on it. If nothing was left open, write "None — the architecture doc fully specified this."]
 ```

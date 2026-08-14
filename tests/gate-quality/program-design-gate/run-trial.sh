@@ -1,11 +1,12 @@
 #!/usr/bin/env bash
-# Run a single architecture-gate quality trial.
+# Run a single program-design-gate quality trial.
 # Usage: run-trial.sh <trial-output-dir>
 #
-# Drives a real brainstorming -> architecture-gate conversation on a toy
-# URL-shortener feature, locates the produced architecture doc, and scores
-# it with a headless LLM judge against the rubric in
-# docs/superpowers/specs/2026-08-11-architecture-gate-quality-tests-design.md.
+# Drives a real brainstorming -> architecture-gate -> program-design-gate
+# conversation on a toy URL-shortener feature, locates the produced
+# program design doc, and scores it with a headless LLM judge against the
+# rubric in
+# docs/superpowers/specs/2026-08-14-program-design-gate-quality-tests-design.md.
 
 set -euo pipefail
 
@@ -37,11 +38,14 @@ TURNS=(
     "I've reviewed the spec, it looks good, please proceed."
     "That architecture approach looks good -- please continue."
     "Approved. Please write the architecture doc."
-    "I've reviewed the architecture doc, it looks good."
+    "I've reviewed the architecture doc, it looks good, please proceed."
+    "Approved. Please write the program design doc."
+    "I've reviewed the program design doc, it looks good."
 )
 
 BRAINSTORMING_TRIGGERED=false
 ARCHITECTURE_GATE_TRIGGERED=false
+PROGRAM_DESIGN_GATE_TRIGGERED=false
 TURNS_USED=0
 
 for i in "${!TURNS[@]}"; do
@@ -62,9 +66,12 @@ for i in "${!TURNS[@]}"; do
     if [ "$ARCHITECTURE_GATE_TRIGGERED" = "false" ] && skill_invoked_in "$LOG_FILE" "architecture-gate"; then
         ARCHITECTURE_GATE_TRIGGERED=true
     fi
+    if [ "$PROGRAM_DESIGN_GATE_TRIGGERED" = "false" ] && skill_invoked_in "$LOG_FILE" "program-design-gate"; then
+        PROGRAM_DESIGN_GATE_TRIGGERED=true
+    fi
 done
 
-DOC_PATH="$(find "$PROJECT_DIR/docs/superpowers/specs" -name '*-architecture.md' -print -quit 2>/dev/null || true)"
+DOC_PATH="$(find "$PROJECT_DIR/docs/superpowers/specs" -name '*-program-design.md' -print -quit 2>/dev/null || true)"
 
 DOC_FOUND=false
 if [ -n "$DOC_PATH" ]; then
@@ -74,11 +81,11 @@ fi
 OUTCOME="inconclusive"
 JUDGE_OUTPUT_FILE=""
 
-if [ "$DOC_FOUND" = "true" ] && [ "$ARCHITECTURE_GATE_TRIGGERED" = "true" ]; then
+if [ "$DOC_FOUND" = "true" ] && [ "$PROGRAM_DESIGN_GATE_TRIGGERED" = "true" ]; then
     JUDGE_OUTPUT_FILE="$TRIAL_DIR/judge-output.txt"
     JUDGE_PROMPT="$(build_judge_prompt "$DOC_PATH")"
     run_judge "$JUDGE_PROMPT" "$JUDGE_OUTPUT_FILE"
-    VERDICT="$(parse_judge_verdict "$JUDGE_OUTPUT_FILE" "Architecture Doc Review")"
+    VERDICT="$(parse_judge_verdict "$JUDGE_OUTPUT_FILE" "Program Design Doc Review")"
     case "$VERDICT" in
         pass) OUTCOME="pass" ;;
         fail) OUTCOME="fail" ;;
@@ -91,6 +98,7 @@ cat > "$TRIAL_DIR/result.json" <<EOF
   "trial_dir": "$TRIAL_DIR",
   "brainstorming_triggered": $BRAINSTORMING_TRIGGERED,
   "architecture_gate_triggered": $ARCHITECTURE_GATE_TRIGGERED,
+  "program_design_gate_triggered": $PROGRAM_DESIGN_GATE_TRIGGERED,
   "doc_found": $DOC_FOUND,
   "doc_path": "${DOC_PATH:-}",
   "judge_output_file": "${JUDGE_OUTPUT_FILE:-}",

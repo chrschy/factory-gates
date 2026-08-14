@@ -40,7 +40,7 @@ cat > "$TMPFILE" <<'EOF'
 **Issues (if any):**
 None.
 EOF
-assert_eq "Approved status -> pass" "pass" "$(parse_judge_verdict "$TMPFILE")"
+assert_eq "Approved status -> pass" "pass" "$(parse_judge_verdict "$TMPFILE" "Architecture Doc Review")"
 
 cat > "$TMPFILE" <<'EOF'
 ## Architecture Doc Review
@@ -50,23 +50,23 @@ cat > "$TMPFILE" <<'EOF'
 **Issues (if any):**
 - Component boundaries: the "data store" is never named as its own component -- unclear if it's owned by one of the two services or a third thing.
 EOF
-assert_eq "Issues Found status -> fail" "fail" "$(parse_judge_verdict "$TMPFILE")"
+assert_eq "Issues Found status -> fail" "fail" "$(parse_judge_verdict "$TMPFILE" "Architecture Doc Review")"
 
 cat > "$TMPFILE" <<'EOF'
 This is not a real review, just some rambling text with no Status line
 and no recognizable structure at all.
 EOF
-assert_eq "malformed output, no header -> unparseable" "unparseable" "$(parse_judge_verdict "$TMPFILE")"
+assert_eq "malformed output, no header -> unparseable" "unparseable" "$(parse_judge_verdict "$TMPFILE" "Architecture Doc Review")"
 
 cat > "$TMPFILE" <<'EOF'
 ## Architecture Doc Review
 
 I think this looks fine overall.
 EOF
-assert_eq "header present but no Status line -> unparseable" "unparseable" "$(parse_judge_verdict "$TMPFILE")"
+assert_eq "header present but no Status line -> unparseable" "unparseable" "$(parse_judge_verdict "$TMPFILE" "Architecture Doc Review")"
 
 : > "$TMPFILE"
-assert_eq "empty file -> unparseable" "unparseable" "$(parse_judge_verdict "$TMPFILE")"
+assert_eq "empty file -> unparseable" "unparseable" "$(parse_judge_verdict "$TMPFILE" "Architecture Doc Review")"
 
 cat > "$TMPFILE" <<'EOF'
 ## Architecture Doc Review
@@ -76,7 +76,7 @@ cat > "$TMPFILE" <<'EOF'
 **Issues (if any):**
 - [Category]: [specific issue] -- [why it would block program-design-gate]
 EOF
-assert_eq "placeholder Status line -> unparseable" "unparseable" "$(parse_judge_verdict "$TMPFILE")"
+assert_eq "placeholder Status line -> unparseable" "unparseable" "$(parse_judge_verdict "$TMPFILE" "Architecture Doc Review")"
 
 # --- build_judge_prompt ---
 
