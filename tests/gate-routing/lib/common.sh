@@ -42,6 +42,9 @@ setup_trial_dir() {
     local base_dir="$1"
     local project_dir="$base_dir/project"
     mkdir -p "$project_dir/docs/superpowers/specs" "$project_dir/docs/superpowers/plans"
+    git -C "$project_dir" init -q -b main
+    git -C "$project_dir" config user.name "test"
+    git -C "$project_dir" config user.email "test@test.com"
     echo "$project_dir"
 }
 

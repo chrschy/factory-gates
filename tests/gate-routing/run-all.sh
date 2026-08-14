@@ -2,8 +2,10 @@
 # Run the full gate-routing trial matrix and report pass/fail/inconclusive
 # rates per scenario.
 #
-# Usage: run-all.sh [--scenario bare|explicit] [--trials N]
-#   --scenario   Run only this scenario (default: both bare and explicit)
+# Usage: run-all.sh [--scenario bare|explicit|claude-md|slash-command] [--trials N]
+#   --scenario   Run only this scenario (default: both bare and explicit --
+#                claude-md and slash-command are exploratory, run them
+#                explicitly with --scenario until proven out)
 #   --trials N   Trials per scenario (default: 3)
 
 set -euo pipefail
