@@ -76,8 +76,9 @@ JUDGE_OUTPUT_FILE=""
 
 if [ "$DOC_FOUND" = "true" ] && [ "$ARCHITECTURE_GATE_TRIGGERED" = "true" ]; then
     JUDGE_OUTPUT_FILE="$TRIAL_DIR/judge-output.txt"
-    run_judge "$DOC_PATH" "$JUDGE_OUTPUT_FILE"
-    VERDICT="$(parse_judge_verdict "$JUDGE_OUTPUT_FILE")"
+    JUDGE_PROMPT="$(build_judge_prompt "$DOC_PATH")"
+    run_judge "$JUDGE_PROMPT" "$JUDGE_OUTPUT_FILE"
+    VERDICT="$(parse_judge_verdict "$JUDGE_OUTPUT_FILE" "Architecture Doc Review")"
     case "$VERDICT" in
         pass) OUTCOME="pass" ;;
         fail) OUTCOME="fail" ;;

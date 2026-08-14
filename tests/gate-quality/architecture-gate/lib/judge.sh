@@ -1,9 +1,12 @@
 #!/usr/bin/env bash
-# Headless LLM-judge for architecture-gate's output document quality.
-# No plugins needed -- the judge only reads and reasons over the document,
-# it doesn't need any skill loaded.
+# architecture-gate's rubric, using the shared judge mechanics in
+# ../../lib/judge-common.sh.
 
 set -euo pipefail
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+# shellcheck source=../../lib/judge-common.sh
+source "$SCRIPT_DIR/../../lib/judge-common.sh"
 
 # Build the judge prompt for a given architecture doc. Prints to stdout.
 build_judge_prompt() {
@@ -47,36 +50,4 @@ ordering, and stylistic choices are not issues.
 **Recommendations (advisory, do not block approval):**
 - [suggestions]
 PROMPT_EOF
-}
-
-# Run the judge against a document, writing its raw response to output_file.
-# Usage: run_judge <doc_path> <output_file>
-run_judge() {
-    local doc_path="$1"
-    local output_file="$2"
-    local prompt
-    prompt="$(build_judge_prompt "$doc_path")"
-    timeout 120 claude -p "$prompt" --dangerously-skip-permissions \
-        --disallowedTools "Bash,Read,Write,Edit,NotebookEdit,Glob,Grep,WebFetch,WebSearch,Task,TodoWrite,ExitPlanMode" \
-        --strict-mcp-config \
-        > "$output_file" 2>&1 || true
-}
-
-# Parse a judge output file into "pass", "fail", or "unparseable".
-# Usage: parse_judge_verdict <output_file>
-parse_judge_verdict() {
-    local output_file="$1"
-    if ! grep -q "Architecture Doc Review" "$output_file" 2>/dev/null; then
-        echo "unparseable"
-        return
-    fi
-    local status_line
-    status_line="$(grep -E '^\*\*Status:\*\*' "$output_file" 2>/dev/null | head -1)"
-    if printf '%s' "$status_line" | grep -qE '^\*\*Status:\*\*[[:space:]]*Approved[[:space:]]*$'; then
-        echo "pass"
-    elif printf '%s' "$status_line" | grep -qE '^\*\*Status:\*\*[[:space:]]*Issues Found[[:space:]]*$'; then
-        echo "fail"
-    else
-        echo "unparseable"
-    fi
 }
