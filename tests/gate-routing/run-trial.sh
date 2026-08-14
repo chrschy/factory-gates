@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Run a single gate-routing trial.
-# Usage: run-trial.sh <bare|explicit> <trial-output-dir>
+# Usage: run-trial.sh <bare|explicit|claude-md|slash-command> <trial-output-dir>
 #
 # Drives a real brainstorming conversation (Superpowers + factory-gates
 # both loaded) through to the brainstorming -> architecture-gate handoff
@@ -17,12 +17,12 @@ SCENARIO="${1:-}"
 TRIAL_DIR="${2:-}"
 
 if [ -z "$SCENARIO" ] || [ -z "$TRIAL_DIR" ]; then
-    echo "Usage: $0 <bare|explicit> <trial-output-dir>" >&2
+    echo "Usage: $0 <bare|explicit|claude-md|slash-command> <trial-output-dir>" >&2
     exit 1
 fi
 
-if [ "$SCENARIO" != "bare" ] && [ "$SCENARIO" != "explicit" ]; then
-    echo "ERROR: scenario must be 'bare' or 'explicit', got '$SCENARIO'" >&2
+if [ "$SCENARIO" != "bare" ] && [ "$SCENARIO" != "explicit" ] && [ "$SCENARIO" != "claude-md" ] && [ "$SCENARIO" != "slash-command" ]; then
+    echo "ERROR: scenario must be 'bare', 'explicit', 'claude-md', or 'slash-command', got '$SCENARIO'" >&2
     exit 1
 fi
 
@@ -34,11 +34,24 @@ PROJECT_DIR="$(setup_trial_dir "$TRIAL_DIR")"
 
 FEATURE_REQUEST="I want to build a small in-memory rate limiter for an API. Single component: a RateLimiter class with a check(key) method, fixed-window algorithm, 100 requests per 60 seconds, no persistence, no external dependencies, single file. That's the complete design -- no open questions on my end."
 
-if [ "$SCENARIO" = "explicit" ]; then
-    TURN1_PROMPT="Use the factory-gates workflow for this. $FEATURE_REQUEST"
-else
-    TURN1_PROMPT="$FEATURE_REQUEST"
-fi
+CLAUDE_MD_SNIPPET="## Software Factory Workflow
+For any new feature or creative work, use the factory-gates workflow -- architecture-gate and program-design-gate run before writing-plans, vertical-slices-gate runs before execution. Do not skip these gates even if a skill's own instructions say to invoke writing-plans directly."
+
+case "$SCENARIO" in
+    explicit)
+        TURN1_PROMPT="Use the factory-gates workflow for this. $FEATURE_REQUEST"
+        ;;
+    claude-md)
+        TURN1_PROMPT="$FEATURE_REQUEST"
+        echo "$CLAUDE_MD_SNIPPET" > "$PROJECT_DIR/CLAUDE.md"
+        ;;
+    slash-command)
+        TURN1_PROMPT="/factory-gates $FEATURE_REQUEST"
+        ;;
+    *)
+        TURN1_PROMPT="$FEATURE_REQUEST"
+        ;;
+esac
 
 TURNS=(
     "$TURN1_PROMPT"
