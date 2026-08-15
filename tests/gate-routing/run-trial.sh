@@ -32,7 +32,7 @@ FACTORY_GATES_DIR="$(resolve_factory_gates_dir)"
 mkdir -p "$TRIAL_DIR"
 PROJECT_DIR="$(setup_trial_dir "$TRIAL_DIR")"
 
-FEATURE_REQUEST="I want to build a small in-memory rate limiter for an API. Single component: a RateLimiter class with a check(key) method, fixed-window algorithm, 100 requests per 60 seconds, no persistence, no external dependencies, single file. That's the complete design -- no open questions on my end."
+FEATURE_REQUEST="I want to build a small in-memory rate limiter for an API, implemented in Python using only the standard library. Single component: a RateLimiter class with a check(key) method, fixed-window algorithm, 100 requests per 60 seconds, no persistence, no external dependencies, single file. That's the complete design -- no open questions on my end."
 
 CLAUDE_MD_SNIPPET="## Software Factory Workflow
 For any new feature or creative work, use the factory-gates workflow -- architecture-gate and program-design-gate run before writing-plans, vertical-slices-gate runs before execution. Do not skip these gates even if a skill's own instructions say to invoke writing-plans directly."
