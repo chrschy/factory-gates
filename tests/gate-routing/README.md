@@ -77,6 +77,20 @@ with `SUPERPOWERS_PLUGIN_DIR` to point at a different checkout).
   environment/setup issue with the trial — not a signal about
   factory-gates' routing)
 
+A separate `detour_skill` field records a different, non-fatal pattern:
+`brainstorming` fires correctly, but the conversation gets sidetracked
+into an unrelated skill (most commonly `test-driven-development`) before
+settling into its final outcome. Unlike `bypass_skill`, this does not
+change `outcome` — a trial that detours and still reaches
+`architecture-gate` is still a `pass`. It's purely diagnostic: useful for
+seeing how often trials take a detour and whether they recover.
+
+Both `bypass_skill` and `detour_skill` exclude this plugin's own
+`factory-gates` entry-point skill from counting as a bypass or detour —
+its own instructions are to invoke `brainstorming` immediately next, so
+seeing it fire (alone, or just before `brainstorming` in the same turn)
+is expected, on-path behavior, not a routing problem.
+
 Per-trial logs and `result.json` verdicts are kept under
 `/tmp/factory-gates-tests/<timestamp>/<scenario>/trial-<n>/` for
 inspection after a run.
