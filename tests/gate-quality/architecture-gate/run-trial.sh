@@ -28,7 +28,7 @@ FACTORY_GATES_DIR="$(resolve_factory_gates_dir)"
 mkdir -p "$TRIAL_DIR"
 PROJECT_DIR="$(setup_trial_dir "$TRIAL_DIR")"
 
-FEATURE_REQUEST="I want to build a small URL shortener. Two components: a public redirect service that takes a short code and 302-redirects to the original URL, and an admin API for creating new short links (POST with a target URL, returns a short code). Both read/write the same data store (short code -> target URL mapping). Redirect latency matters -- it's on the hot path for every click. No user accounts, no analytics, no custom short codes (always generated). That's the complete design -- no open questions on my end."
+FEATURE_REQUEST="I want to build a small URL shortener, implemented in Python using only the standard library. Two components: a public redirect service that takes a short code and 302-redirects to the original URL, and an admin API for creating new short links (POST with a target URL, returns a short code). Both read/write the same data store (short code -> target URL mapping). Redirect latency matters -- it's on the hot path for every click. No user accounts, no analytics, no custom short codes (always generated). That's the complete design -- no open questions on my end."
 
 TURNS=(
     "$FEATURE_REQUEST"
