@@ -85,12 +85,14 @@ Add a new check immediately after it, still inside the loop:
 
     if [ "$BRAINSTORMING_TRIGGERED" = "true" ] && [ -z "$DETOUR_SKILL" ]; then
         CANDIDATE="$(first_skill_invoked_in "$LOG_FILE")"
-        if [ -n "$CANDIDATE" ] && [ "$CANDIDATE" != "architecture-gate" ] && [ "$CANDIDATE" != "writing-plans" ]; then
+        if [ -n "$CANDIDATE" ] && [ "$CANDIDATE" != "brainstorming" ] && [ "$CANDIDATE" != "architecture-gate" ] && [ "$CANDIDATE" != "writing-plans" ]; then
             DETOUR_SKILL="$CANDIDATE"
         fi
     fi
 done
 ```
+
+The `!= "brainstorming"` exclusion matters: on the very turn `brainstorming` first triggers, `first_skill_invoked_in` returns `"brainstorming"` itself (it's the first skill call in that turn's log) — without this exclusion, the triggering turn would be misflagged as its own detour.
 
 Note this check does not `break` — it only records; the loop continues to the next turn normally, and the existing `architecture-gate`/`writing-plans` checks (earlier in the same iteration) still control `OUTCOME` and loop termination exactly as before.
 

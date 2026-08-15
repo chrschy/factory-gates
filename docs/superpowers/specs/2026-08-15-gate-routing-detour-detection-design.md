@@ -20,13 +20,13 @@ Unlike PR #12's bypass fix, this does **not** change outcome classification. Wha
 ```bash
     if [ "$BRAINSTORMING_TRIGGERED" = "true" ] && [ -z "$DETOUR_SKILL" ]; then
         CANDIDATE="$(first_skill_invoked_in "$LOG_FILE")"
-        if [ -n "$CANDIDATE" ] && [ "$CANDIDATE" != "architecture-gate" ] && [ "$CANDIDATE" != "writing-plans" ]; then
+        if [ -n "$CANDIDATE" ] && [ "$CANDIDATE" != "brainstorming" ] && [ "$CANDIDATE" != "architecture-gate" ] && [ "$CANDIDATE" != "writing-plans" ]; then
             DETOUR_SKILL="$CANDIDATE"
         fi
     fi
 ```
 
-Placed after the existing `architecture-gate`/`writing-plans` checks in the loop (which `break` on match), so a turn that fires `architecture-gate` directly is never flagged as a detour. Does not `break` — the loop continues normally; this only records, it never changes control flow or `OUTCOME`.
+Placed after the existing `architecture-gate`/`writing-plans` checks in the loop (which `break` on match), so a turn that fires `architecture-gate` directly is never flagged as a detour. The `!= "brainstorming"` exclusion matters too: on the very turn `brainstorming` first triggers, `first_skill_invoked_in` returns `"brainstorming"` itself (it's the first skill call in that turn's log) — without excluding it, the triggering turn would be misflagged as its own detour. Does not `break` — the loop continues normally; this only records, it never changes control flow or `OUTCOME`.
 
 `result.json` gains one new field, always present:
 
