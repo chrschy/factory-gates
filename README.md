@@ -69,10 +69,13 @@ Three ways to make it more reliable, all measured, none of them a hard guarantee
 
 | Mechanism | How | Measured result |
 |---|---|---|
-| (bare, no phrasing) | Plain feature request, no workaround | 6 trials: 1 pass, 3 fail (skipped `brainstorming` entirely, jumped straight to another skill instead), 2 inconclusive (`brainstorming` ran but neither `architecture-gate` nor `writing-plans` was reached within the trial's turn budget) — this is the baseline the mechanisms below improve on |
+| (bare, no phrasing) | Plain feature request, no workaround | 3 trials (small sample — see note below): 1 fail (skipped `brainstorming` entirely, jumped straight to another skill instead), 2 inconclusive (`brainstorming` fired correctly, then got detoured mid-conversation into an unrelated skill before running out of turn budget) — this is the baseline the mechanisms below improve on |
 | Say so explicitly | Start the feature with *"Use the factory-gates workflow for this."* | 22 formal trials, 0 fails; explicit phrasing also correlates with fewer non-completions than a bare request |
 | `/factory-gates <description>` | Use the command instead of a plain message | 3 trials: 2 pass, 0 fail, 1 inconclusive (the model got stuck on an unrelated clarifying question before reaching the routing decision — not a routing failure) |
 | `CLAUDE.md` project instruction | Add the snippet below to your project's `CLAUDE.md` once | 3 trials: 2 pass, 0 fail, 1 inconclusive (same as above — no fails in either new mechanism) |
+
+> [!NOTE]
+> The bare-scenario sample above is intentionally small: verifying the test harness's own classification logic (see `tests/gate-routing/`) surfaced and fixed several real bugs in it, and confirming the fix consumed the available trial quota for this round. Expanding this sample is tracked as a follow-up.
 
 > [!TIP]
 > Add this to your project's `CLAUDE.md` once, and you won't need to remember any of the above per feature:

@@ -93,5 +93,5 @@ skill_invoked_in() {
 first_skill_invoked_in() {
     local log_file="$1"
     grep -o '"skill":"[^"]*"' "$log_file" 2>/dev/null | head -1 | \
-        sed -E 's/"skill":"([^:"]*:)?([^"]*)"/\2/'
+        sed -E 's/"skill":"([^:"]*:)?([^"]*)"/\2/' || true
 }
