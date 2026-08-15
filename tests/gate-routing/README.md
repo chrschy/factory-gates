@@ -63,11 +63,19 @@ with `SUPERPOWERS_PLUGIN_DIR` to point at a different checkout).
 ```
 
 - **pass** — `architecture-gate` was invoked before `writing-plans`
-- **fail** — `writing-plans` was invoked directly, `architecture-gate`
-  never fired first (the exact failure mode the README warns about)
-- **inconclusive** — neither fired within 4 turns, or `brainstorming`
-  itself never triggered (an environment/setup issue with the trial, not
-  a signal about factory-gates' routing)
+- **fail** — either `writing-plans` was invoked directly with
+  `architecture-gate` never firing first (the failure mode the README
+  warns about), or `brainstorming` was bypassed entirely and some other
+  skill fired instead before it ever triggered (a more severe pattern —
+  the entire gate model gets skipped, not just one gate). Trials that
+  fail for the second reason carry a non-empty `bypass_skill` field in
+  `result.json`, naming the skill that fired instead.
+- **inconclusive** — `brainstorming` triggered but neither
+  `architecture-gate` nor `writing-plans` fired within 4 turns (the trial
+  ran out of turn budget before reaching the routing decision), or
+  literally nothing was invoked at all (a crash, timeout, or other
+  environment/setup issue with the trial — not a signal about
+  factory-gates' routing)
 
 Per-trial logs and `result.json` verdicts are kept under
 `/tmp/factory-gates-tests/<timestamp>/<scenario>/trial-<n>/` for
