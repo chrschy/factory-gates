@@ -63,13 +63,14 @@ Or point at a git remote once you've pushed this directory to one:
 ## ⚠️ Known limitation — read this
 
 > [!WARNING]
-> Superpowers' own `brainstorming` skill ends with an explicit instruction: *"Invoke the writing-plans skill... Do NOT invoke any other skill."* Because this plugin doesn't edit Superpowers' files, that instruction still exists verbatim. `architecture-gate`'s description is written to be highly specific ("use immediately after brainstorming, before writing-plans") so Claude picks it up as the more specific match — and Superpowers' own `using-superpowers` router skill instructs Claude to invoke *any* applicable skill, not just the one another skill points to. This is a soft override, not a hard one, and this repo measures it empirically (`tests/gate-routing/`) rather than just asserting it works.
+> Superpowers' own `brainstorming` skill ends with an explicit instruction: *"Invoke the writing-plans skill... Do NOT invoke any other skill."* Because this plugin doesn't edit Superpowers' files, that instruction still exists verbatim. `architecture-gate`'s description is written to be highly specific ("use immediately after brainstorming, before writing-plans") so Claude picks it up as the more specific match — and Superpowers' own `using-superpowers` router skill instructs Claude to invoke *any* applicable skill, not just the one another skill points to. This is a soft override, not a hard one, and this repo measures it empirically (`tests/gate-routing/`) rather than just asserting it works. A bare request can also skip `brainstorming` entirely and jump straight into an unrelated skill (e.g. `test-driven-development`) instead — a more severe pattern than losing only the `architecture-gate` handoff, and one the test harness now detects and classifies as a failure rather than an inconclusive result.
 
 Three ways to make it more reliable, all measured, none of them a hard guarantee — each works by adding an explicit, early statement that `brainstorming`'s hard "invoke writing-plans only" instruction has to compete against, not by editing Superpowers' own files or routing rules:
 
 | Mechanism | How | Measured result |
 |---|---|---|
-| Say so explicitly | Start the feature with *"Use the factory-gates workflow for this."* | 16 formal trials, 0 fails; explicit phrasing also correlates with fewer non-completions than a bare request |
+| (bare, no phrasing) | Plain feature request, no workaround | 6 trials: 1 pass, 3 fail (skipped `brainstorming` entirely, jumped straight to another skill instead), 2 inconclusive (`brainstorming` ran but neither `architecture-gate` nor `writing-plans` was reached within the trial's turn budget) — this is the baseline the mechanisms below improve on |
+| Say so explicitly | Start the feature with *"Use the factory-gates workflow for this."* | 22 formal trials, 0 fails; explicit phrasing also correlates with fewer non-completions than a bare request |
 | `/factory-gates <description>` | Use the command instead of a plain message | 3 trials: 2 pass, 0 fail, 1 inconclusive (the model got stuck on an unrelated clarifying question before reaching the routing decision — not a routing failure) |
 | `CLAUDE.md` project instruction | Add the snippet below to your project's `CLAUDE.md` once | 3 trials: 2 pass, 0 fail, 1 inconclusive (same as above — no fails in either new mechanism) |
 
