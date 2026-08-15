@@ -1,3 +1,48 @@
+# factory-gates — README Redesign
+
+**Status:** approved
+**Date:** 2026-08-15
+
+## Why
+
+The README's content is accurate and complete (gate table, install steps, real measured determinism data, credits) but plainly formatted — no visual orientation for a first-time reader beyond prose. Redesign the presentation only, using [charmbracelet/vhs](https://github.com/charmbracelet/vhs) and [rbtsbg/emp-exp](https://github.com/rbtsbg/emp-exp) as style references, without changing what it says.
+
+## What was borrowed from each reference, and why
+
+Neither reference maps directly — VHS's README leans on GIF demos (no equivalent for a skills plugin with no visual terminal output) and emp-exp's leans on academic directory-tree/config-file documentation (not applicable here). What transfers:
+
+- **From VHS:** a badges row under the title, a big visual "orient the reader in 2 seconds" element right after the tagline (VHS uses a demo GIF; here, a Mermaid flowchart of the gate pipeline — GitHub renders Mermaid natively, so it costs nothing extra), and GitHub's `> [!WARNING]` / `> [!TIP]` alert callout syntax for the "Known limitation" section instead of plain bold text.
+- **From emp-exp:** light emoji markers before section headers for quick visual scanning — used sparingly (top-level `##` headers only, not every subsection) per the explicit "not too verbose or overloaded" brief, unlike emp-exp's own every-header usage.
+
+## Badges
+
+Only real, currently-true facts — no build-status or version badge, since there's no CI or cut release yet to back them:
+
+- MIT license (real — `LICENSE` file exists)
+- "Requires Superpowers" (accurate, informative, links to the dependency)
+
+## The Mermaid diagram
+
+Visualizes the plugin's core pitch directly — which pieces are Superpowers' own vs. this plugin's addition:
+
+```mermaid
+flowchart LR
+    subgraph SP["Superpowers"]
+        B["brainstorming"]
+        W["writing-plans"]
+        X["subagent-driven-development /<br/>executing-plans"]
+    end
+    subgraph FG["factory-gates (this plugin)"]
+        A["architecture-gate"]
+        P["program-design-gate"]
+        V["vertical-slices-gate"]
+    end
+    B --> A --> P --> W --> V --> X
+```
+
+## Full new `README.md` content
+
+```markdown
 # factory-gates
 
 <p>
@@ -87,3 +132,11 @@ For any new feature or creative work, use the factory-gates workflow — archite
 - Base framework this plugs into: [obra/superpowers](https://github.com/obra/superpowers) (Jesse Vincent).
 
 This is an unofficial community glue layer, not affiliated with HumanLayer or the Superpowers project.
+```
+
+## Self-review
+
+- **Placeholders:** none — the full replacement content is final, concrete text.
+- **Internal consistency:** all factual content (gate table, install commands, the 3-mechanism determinism table, CLAUDE.md snippet, credits) is carried over unchanged from the current README — this is a presentation-only pass, not a content rewrite. Verified by direct comparison against the current file before drafting.
+- **Scope:** one file, presentation only. No changes to any skill, test, or other documentation.
+- **Ambiguity:** none — every design choice (which badges, why no build/version badge, why a Mermaid diagram instead of a GIF, why sparing emoji use) has a stated reason, not left implicit.
