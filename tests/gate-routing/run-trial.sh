@@ -115,10 +115,6 @@ for i in "${!TURNS[@]}"; do
     fi
 done
 
-if [ "$BRAINSTORMING_TRIGGERED" = "false" ]; then
-    OUTCOME="inconclusive"
-fi
-
 cat > "$TRIAL_DIR/result.json" <<EOF
 {
   "scenario": "$SCENARIO",
