@@ -86,3 +86,12 @@ skill_invoked_in() {
     grep -q '"name":"Skill"' "$log_file" 2>/dev/null && \
         grep -qE '"skill":"([^"]*:)?'"$skill_name"'"' "$log_file" 2>/dev/null
 }
+
+# Returns the name of the first Skill tool invocation in a log file
+# (namespace prefix stripped, e.g. "superpowers:test-driven-development"
+# -> "test-driven-development"), or nothing if no Skill call appears.
+first_skill_invoked_in() {
+    local log_file="$1"
+    grep -o '"skill":"[^"]*"' "$log_file" 2>/dev/null | head -1 | \
+        sed -E 's/"skill":"([^:"]*:)?([^"]*)"/\2/'
+}
