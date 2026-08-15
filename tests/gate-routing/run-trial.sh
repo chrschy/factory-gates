@@ -65,6 +65,7 @@ ARCHITECTURE_GATE_TRIGGERED=false
 ARCHITECTURE_GATE_TURN=0
 WRITING_PLANS_BEFORE_ARCHITECTURE=false
 BYPASS_SKILL=""
+DETOUR_SKILL=""
 OUTCOME="inconclusive"
 TURNS_USED=0
 
@@ -105,6 +106,13 @@ for i in "${!TURNS[@]}"; do
             break
         fi
     fi
+
+    if [ "$BRAINSTORMING_TRIGGERED" = "true" ] && [ -z "$DETOUR_SKILL" ]; then
+        CANDIDATE="$(first_skill_invoked_in "$LOG_FILE")"
+        if [ -n "$CANDIDATE" ] && [ "$CANDIDATE" != "brainstorming" ] && [ "$CANDIDATE" != "architecture-gate" ] && [ "$CANDIDATE" != "writing-plans" ]; then
+            DETOUR_SKILL="$CANDIDATE"
+        fi
+    fi
 done
 
 if [ "$BRAINSTORMING_TRIGGERED" = "false" ]; then
@@ -120,6 +128,7 @@ cat > "$TRIAL_DIR/result.json" <<EOF
   "architecture_gate_turn": $ARCHITECTURE_GATE_TURN,
   "writing_plans_before_architecture": $WRITING_PLANS_BEFORE_ARCHITECTURE,
   "bypass_skill": "$BYPASS_SKILL",
+  "detour_skill": "$DETOUR_SKILL",
   "turns_used": $TURNS_USED,
   "outcome": "$OUTCOME"
 }
