@@ -103,6 +103,8 @@ if [ "$PLAN_FOUND" = "true" ] && [ "$SPEC_FOUND" = "true" ]; then
         EXECUTION_COMPLETED=true
         SCORE_LOG="$TRIAL_DIR/acceptance-test-output.txt"
         read -r TESTS_PASSED TESTS_TOTAL <<< "$(run_acceptance_tests "$PROJECT_DIR" "$SCORE_LOG")"
+        TESTS_PASSED="${TESTS_PASSED:-0}"
+        TESTS_TOTAL="${TESTS_TOTAL:-0}"
     fi
 fi
 
