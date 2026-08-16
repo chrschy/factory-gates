@@ -14,24 +14,24 @@ set -euo pipefail
 parse_unittest_output() {
     local output_file="$1"
     local total
-    total="$(grep -oE '^Ran [0-9]+ tests? in' "$output_file" 2>/dev/null | grep -oE '[0-9]+' | head -1)"
+    total="$(grep -oE '^Ran [0-9]+ tests? in' "$output_file" 2>/dev/null | grep -oE '[0-9]+' | head -1 || true)"
 
     if [ -z "$total" ]; then
         echo "0 0"
         return
     fi
 
-    if grep -qE '^OK$' "$output_file" 2>/dev/null; then
+    if tail -n 5 "$output_file" 2>/dev/null | grep -qE '^OK$'; then
         echo "$total $total"
         return
     fi
 
     local failed_line
-    failed_line="$(grep -E '^FAILED \(' "$output_file" 2>/dev/null | head -1)"
+    failed_line="$(grep -E '^FAILED \(' "$output_file" 2>/dev/null | head -1 || true)"
     if [ -n "$failed_line" ]; then
         local failures errors
-        failures="$(printf '%s' "$failed_line" | grep -oE 'failures=[0-9]+' | grep -oE '[0-9]+')"
-        errors="$(printf '%s' "$failed_line" | grep -oE 'errors=[0-9]+' | grep -oE '[0-9]+')"
+        failures="$(printf '%s' "$failed_line" | grep -oE 'failures=[0-9]+' | grep -oE '[0-9]+' || true)"
+        errors="$(printf '%s' "$failed_line" | grep -oE 'errors=[0-9]+' | grep -oE '[0-9]+' || true)"
         failures="${failures:-0}"
         errors="${errors:-0}"
         echo "$((total - failures - errors)) $total"
