@@ -50,14 +50,14 @@ Requires Superpowers already installed. From your project (or globally):
 
 ```
 /plugin marketplace add /path/to/factory-gates
-/plugin install factory-gates@factory-gates-dev
+/plugin install factory-gates@factory-gates
 ```
 
 Or point at a git remote once you've pushed this directory to one:
 
 ```
-/plugin marketplace add <your-org>/factory-gates
-/plugin install factory-gates@factory-gates-dev
+/plugin marketplace add chrschy/factory-gates
+/plugin install factory-gates@factory-gates
 ```
 
 ## ⚠️ Known limitation — read this
