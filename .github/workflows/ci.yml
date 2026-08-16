@@ -29,3 +29,6 @@ jobs:
 
       - name: Run outcome-benchmark scoring unit tests
         run: tests/outcome-benchmark/test-scoring.sh
+
+      - name: Run outcome-benchmark execute.sh unit tests
+        run: tests/outcome-benchmark/test-execute.sh
