@@ -127,8 +127,8 @@ fi
 if [ -z "${RELEASE_PAT:-}" ]; then
     echo "ERROR: RELEASE_PAT is not set. A real release needs a repository secret" >&2
     echo "named RELEASE_PAT (a Personal Access Token from an admin account) so this" >&2
-    echo "workflow can push past main's branch protection. See" >&2
-    echo "docs/superpowers/specs/2026-08-11-automated-release-versioning-design.md" >&2
+    echo "workflow can open and admin-merge the release PR. See" >&2
+    echo "docs/superpowers/specs/2026-08-16-release-pr-flow-fix-design.md" >&2
     echo "for setup instructions. Re-run with --dry-run to test without it." >&2
     rm -f "$NOTES_FILE"
     exit 1
@@ -137,14 +137,40 @@ fi
 jq --arg v "$NEXT_VERSION" '.version = $v' "$PLUGIN_JSON" > "${PLUGIN_JSON}.tmp" && mv "${PLUGIN_JSON}.tmp" "$PLUGIN_JSON"
 jq --arg v "$NEXT_VERSION" '.plugins[0].version = $v' "$MARKETPLACE_JSON" > "${MARKETPLACE_JSON}.tmp" && mv "${MARKETPLACE_JSON}.tmp" "$MARKETPLACE_JSON"
 
+RELEASE_BRANCH="release/v${NEXT_VERSION}"
+
 git config user.name "github-actions[bot]"
 git config user.email "github-actions[bot]@users.noreply.github.com"
+git checkout -b "$RELEASE_BRANCH"
 git add "$PLUGIN_JSON" "$MARKETPLACE_JSON"
 git commit -m "chore(release): v${NEXT_VERSION}"
-git tag "v${NEXT_VERSION}"
 
 git remote set-url origin "https://x-access-token:${RELEASE_PAT}@github.com/chrschy/factory-gates.git"
-git push origin main --follow-tags
+git push origin "$RELEASE_BRANCH"
+
+export GH_TOKEN="$RELEASE_PAT"
+
+PR_URL="$(gh pr create --title "chore(release): v${NEXT_VERSION}" --base main --head "$RELEASE_BRANCH" --body "Automated release PR for v${NEXT_VERSION}. See the workflow run for the full computed release notes.")"
+echo "Release PR: $PR_URL"
+
+echo "Waiting for required checks on the release PR..."
+if ! gh pr checks "$RELEASE_BRANCH" --watch --fail-fast; then
+    echo "" >&2
+    echo "ERROR: required checks failed on the release PR ($PR_URL)." >&2
+    echo "Not merging, not tagging, not releasing. Fix the failure, then either" >&2
+    echo "push a fix to $RELEASE_BRANCH or close the PR and re-run this workflow." >&2
+    rm -f "$NOTES_FILE"
+    exit 1
+fi
+
+gh pr merge "$RELEASE_BRANCH" --squash --admin
+
+git fetch origin main
+git checkout main
+git reset --hard origin/main
+
+git tag "v${NEXT_VERSION}"
+git push origin "v${NEXT_VERSION}"
 
 gh release create "v${NEXT_VERSION}" --title "v${NEXT_VERSION}" --notes-file "$NOTES_FILE"
 
