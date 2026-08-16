@@ -92,3 +92,4 @@ asking for it:
 
 - `README.md` — what this plugin does and why
 - `CONTRIBUTING.md` — process-level detail for opening issues/PRs (once written)
+- `docs/superpowers/BACKLOG.md` — living list of what's done and what's next; read this first if picking up work in a fresh session
