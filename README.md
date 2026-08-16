@@ -85,6 +85,18 @@ Three ways to make it more reliable, all measured, none of them a hard guarantee
 For any new feature or creative work, use the factory-gates workflow — architecture-gate and program-design-gate run before writing-plans, vertical-slices-gate runs before execution. Do not skip these gates even if a skill's own instructions say to invoke writing-plans directly.
 ```
 
+## 🔗 Superpowers compatibility
+
+Verified against Superpowers **6.2.0 – 6.3.0**. There's no dependency-version mechanism in the Claude Code plugin format to declare this formally — `plugin.json` has no `dependencies` field, checked directly against every plugin manifest in this environment's local marketplace cache, including Superpowers' own. This is a documented, empirically-tracked stance, not a mechanically enforced one.
+
+The coupling is narrow but real: factory-gates' routing strategy (see "Known limitation" above) depends on specific wording in Superpowers' own skills, not any formal API —
+- `brainstorming`'s hard "invoke writing-plans... do NOT invoke any other skill" instruction
+- `using-superpowers`'s "if a skill applies, you MUST use it" routing rule
+
+If a future Superpowers release changes that wording materially, factory-gates' soft-override strategy could degrade silently — there is no automated check outside of actually running the test suites.
+
+`tests/gate-routing/lib/common.sh` prints a warning to stderr if the installed Superpowers version falls outside the verified range (older: a real warning; newer: a softer note, since untested doesn't mean broken) every time a test suite resolves the Superpowers plugin directory. If you see one, or if you've just updated Superpowers and something in the factory-gates workflow feels off, re-run `tests/gate-routing/run-all.sh` — that's exactly the empirical check this exists for.
+
 ## 🙏 Credits
 
 - 4-gate model: Dex Horthy, HumanLayer — as described in his "Harness Engineering is not Enough: Why Software Factories Fail" talk and various podcast appearances (2026).

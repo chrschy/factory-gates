@@ -4,6 +4,42 @@
 
 set -euo pipefail
 
+# The Superpowers version range this repo's routing strategy has been
+# empirically verified against (see README's "Superpowers compatibility"
+# section for what that coupling actually depends on).
+TESTED_SUPERPOWERS_MIN="6.2.0"
+TESTED_SUPERPOWERS_MAX="6.3.0"
+
+# Compares two dotted version strings. Prints "lt", "eq", or "gt" for how
+# the first compares to the second.
+_compare_versions() {
+    local v1="$1" v2="$2"
+    if [ "$v1" = "$v2" ]; then
+        echo "eq"
+        return
+    fi
+    local lower
+    lower="$(printf '%s\n%s\n' "$v1" "$v2" | sort -V | head -1)"
+    if [ "$lower" = "$v1" ]; then
+        echo "lt"
+    else
+        echo "gt"
+    fi
+}
+
+# Warns (stderr only -- callers capture resolve_superpowers_dir's return
+# value via command substitution, so stdout must stay clean) if the given
+# Superpowers version falls outside the range this repo's tests have
+# actually been run against.
+_warn_if_superpowers_version_untested() {
+    local version="$1"
+    if [ "$(_compare_versions "$version" "$TESTED_SUPERPOWERS_MIN")" = "lt" ]; then
+        echo "WARNING: installed Superpowers version ($version) is older than the minimum this repo's tests have been verified against ($TESTED_SUPERPOWERS_MIN). Routing/quality results may not reflect current expected behavior." >&2
+    elif [ "$(_compare_versions "$version" "$TESTED_SUPERPOWERS_MAX")" = "gt" ]; then
+        echo "NOTE: installed Superpowers version ($version) is newer than the last version this repo's tests have been verified against ($TESTED_SUPERPOWERS_MAX). If routing/quality results look unexpected, this is the first thing to check -- see the README's \"Superpowers compatibility\" section." >&2
+    fi
+}
+
 # Resolve the installed Superpowers plugin directory.
 # Override with SUPERPOWERS_PLUGIN_DIR to test against a specific
 # checkout instead of the locally cached marketplace install.
@@ -26,6 +62,7 @@ resolve_superpowers_dir() {
         echo "ERROR: No version directories found in $cache_root" >&2
         exit 1
     fi
+    _warn_if_superpowers_version_untested "$(basename "$version_dir")"
     echo "$version_dir"
 }
 
