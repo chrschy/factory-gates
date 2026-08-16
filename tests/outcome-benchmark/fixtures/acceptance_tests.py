@@ -23,7 +23,9 @@ def _request(method, path, body_bytes=None):
         with urllib.request.urlopen(req) as resp:
             return resp.status, resp.read()
     except urllib.error.HTTPError as e:
-        return e.code, e.read()
+        code, body = e.code, e.read()
+        e.close()
+        return code, body
 
 
 def _post_link(url):
@@ -64,7 +66,9 @@ def _get(path):
         with _NO_REDIRECT_OPENER.open(req) as resp:
             return resp.status, dict(resp.headers)
     except urllib.error.HTTPError as e:
-        return e.code, dict(e.headers)
+        code, headers = e.code, dict(e.headers)
+        e.close()
+        return code, headers
 
 
 class AcceptanceTests(unittest.TestCase):
