@@ -15,6 +15,9 @@ jobs:
       - name: Run release version-calc tests
         run: tests/release/test-version-calc.sh
 
+      - name: Run gate-routing common.sh unit tests
+        run: tests/gate-routing/test-common.sh
+
       - name: Run architecture-gate judge unit tests
         run: tests/gate-quality/architecture-gate/test-judge.sh
 
