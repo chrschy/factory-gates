@@ -38,14 +38,14 @@ run_execution_step() {
     prompt="$(_build_execution_prompt "$plan_path" "$spec_path")"
 
     (
-        cd "$project_dir"
+        cd "$project_dir" || exit 1
         timeout 1800 claude -p "$prompt" \
             --dangerously-skip-permissions \
             --max-turns 40 \
             --output-format stream-json \
             --verbose \
             > "$log_file" 2>&1 || true
-    )
+    ) || true
 
     if [ -f "$project_dir/serve.py" ]; then
         echo "true"
