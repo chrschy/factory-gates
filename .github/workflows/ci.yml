@@ -26,3 +26,6 @@ jobs:
 
       - name: Run vertical-slices-gate judge unit tests
         run: tests/gate-quality/vertical-slices-gate/test-judge.sh
+
+      - name: Run outcome-benchmark scoring unit tests
+        run: tests/outcome-benchmark/test-scoring.sh
