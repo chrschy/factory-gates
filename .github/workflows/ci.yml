@@ -1,0 +1,25 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  fast-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Run release version-calc tests
+        run: tests/release/test-version-calc.sh
+
+      - name: Run architecture-gate judge unit tests
+        run: tests/gate-quality/architecture-gate/test-judge.sh
+
+      - name: Run program-design-gate judge unit tests
+        run: tests/gate-quality/program-design-gate/test-judge.sh
+
+      - name: Run vertical-slices-gate judge unit tests
+        run: tests/gate-quality/vertical-slices-gate/test-judge.sh

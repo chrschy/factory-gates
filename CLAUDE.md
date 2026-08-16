@@ -52,8 +52,14 @@ Applies to PR descriptions, issue bodies, commit messages, and skill prose:
 | Require pull request before merging | on |
 | Required approving reviews | 1 |
 | Admin bypass (`enforce_admins`) | off — repo admins can technically bypass this |
-| Required status checks | none (no CI workflow yet) |
+| Required status checks | `fast-tests` (confirmed via this PR's own run of `.github/workflows/ci.yml`; added as a required check once merged — see below) |
 | Required linear history | on |
+
+Branch protection is updated to require the `fast-tests` check once this
+workflow has run at least once on `main` after merge (GitHub requires a
+check to have reported before its context can be added reliably) — see
+`docs/superpowers/specs/2026-08-16-ci-fast-unit-tests-design.md` for the
+sequencing.
 
 **The admin bypass is a safety valve, not permission.** This repo is currently solo-maintained, and GitHub never counts a PR author's own approval toward "required reviews" — even for the owner — so a strict no-bypass rule would make the maintainer's own PRs permanently unmergeable. In practice: never push directly to `main`, always open a PR, and read the complete diff yourself before merging your own PR, exactly as if someone else were about to.
 
