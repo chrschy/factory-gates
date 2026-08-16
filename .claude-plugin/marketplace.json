@@ -1,6 +1,6 @@
 {
-  "name": "factory-gates-dev",
-  "description": "Development marketplace for the factory-gates plugin",
+  "name": "factory-gates",
+  "description": "Marketplace for the factory-gates plugin",
   "owner": {
     "name": "Christopher Schymura"
   },
