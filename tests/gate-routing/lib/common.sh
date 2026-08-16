@@ -95,3 +95,12 @@ first_skill_invoked_in() {
     grep -o '"skill":"[^"]*"' "$log_file" 2>/dev/null | head -1 | \
         sed -E 's/"skill":"([^:"]*:)?([^"]*)"/\2/' || true
 }
+
+# Prints the concatenated assistant text content from a turn's log file --
+# the model's own words, with tool_use/tool_result blocks excluded. Used
+# by suites that judge conversational output rather than a produced file
+# (currently only vertical-slices-gate-quality).
+extract_assistant_text() {
+    local log_file="$1"
+    jq -r 'select(.type == "assistant") | .message.content[]? | select(.type == "text") | .text' "$log_file" 2>/dev/null
+}
