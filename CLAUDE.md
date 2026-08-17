@@ -88,6 +88,33 @@ asking for it:
 
 `tests/gate-routing/` empirically tests whether the one real skill-routing conflict in this plugin (`brainstorming` → `architecture-gate`) resolves the way the README claims. These are real `claude -p` sessions against a live model — not mocked, non-deterministic, and they cost real tokens. See `tests/gate-routing/README.md` for how to run and interpret them.
 
+## Python Code Standards
+
+Applies to any Python file in this repo (currently `tests/outcome-benchmark/fixtures/acceptance_tests.py`; applies to any future Python code too). Modeled on [data-science-kitchen/baeckerai](https://github.com/data-science-kitchen/baeckerai)'s standards, enforced in CI (`fast-tests` job) and expected to be run locally before opening a PR that touches Python:
+
+```bash
+ruff check .            # lint
+ruff format --check .   # formatting (drop --check to auto-fix locally)
+ty check                # type checking
+```
+
+`ty` is pre-1.0 software (Astral). CI pins an exact version (`ty==0.0.72`) to avoid silent drift from its own changes — revisit this choice if it proves unstable over time.
+
+### Docstrings — numpydoc
+
+All public functions, methods, and classes require [numpydoc](https://numpydoc.readthedocs.io/en/latest/format.html)-format docstrings — production code and test code equally. Private helpers (single leading underscore) need at minimum a one-line summary. Magic methods (`__init__`, `__repr__`) are exempt.
+
+Test functions: type hints on every parameter, explicit `-> None` return type. Unit test docstrings need at minimum a one-line summary of the property being verified.
+
+### Readability
+
+- **Names say what something is**, not how it's implemented. Prefer 2-3 word descriptive names (`document_path` over `p`). No cryptic abbreviations, no single-letter names outside mathematical contexts or standard idioms (`i` in a `range()` loop, `f` for a file handle, `exc` for a caught exception).
+- **Functions start with an action verb** and do exactly one thing. If you need "and" to describe what a function does, split it.
+- **Boolean-returning functions use question form** (`is_registered()`, not `check_registration()`).
+- **Explicit over implicit.** State exact conditions (`if chunk_count >= 0:` not `if chunk_count:`) except for empty-collection guards (`if not nodes:`).
+- **Comments explain why, not what.** If you feel the urge to explain what a block does, improve the names instead.
+- **No function may exceed cyclomatic complexity 15** (enforced by ruff's `C901`).
+
 ## See Also
 
 - `README.md` — what this plugin does and why
