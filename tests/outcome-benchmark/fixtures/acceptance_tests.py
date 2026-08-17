@@ -64,9 +64,9 @@ def _get(path):
     req = urllib.request.Request(BASE_URL + path, method="GET")
     try:
         with _NO_REDIRECT_OPENER.open(req) as resp:
-            return resp.status, dict(resp.headers)
+            return resp.status, resp.headers
     except urllib.error.HTTPError as e:
-        code, headers = e.code, dict(e.headers)
+        code, headers = e.code, e.headers
         e.close()
         return code, headers
 
