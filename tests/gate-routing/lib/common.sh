@@ -85,8 +85,26 @@ setup_trial_dir() {
     echo "$project_dir"
 }
 
+# Prints one --plugin-dir flag (and its value) per line for the given
+# superpowers/factory-gates directories, in the order claude expects them
+# on argv. Pure function -- no subprocess, no side effects. If
+# factory_gates_dir is "", its --plugin-dir pair is omitted entirely
+# (used by the outcome-benchmark suite's baseline condition, which must
+# run with no factory-gates plugin loaded at all).
+# Usage: mapfile -t flags < <(_plugin_dir_flags <superpowers-dir> <factory-gates-dir|"">)
+_plugin_dir_flags() {
+    local superpowers_dir="$1"
+    local factory_gates_dir="$2"
+    printf '%s\n' "--plugin-dir" "$superpowers_dir"
+    if [ -n "$factory_gates_dir" ]; then
+        printf '%s\n' "--plugin-dir" "$factory_gates_dir"
+    fi
+}
+
 # Run one conversation turn.
-# Usage: run_turn <project-dir> <prompt> <do_continue: 0|1> <superpowers-dir> <factory-gates-dir> <log-file>
+# Usage: run_turn <project-dir> <prompt> <do_continue: 0|1> <superpowers-dir> <factory-gates-dir|""> <log-file>
+# factory-gates-dir may be "" -- when empty, the --plugin-dir flag for it
+# is omitted entirely (not passed as an empty path).
 run_turn() {
     local project_dir="$1"
     local prompt="$2"
@@ -100,12 +118,14 @@ run_turn() {
         continue_flag=(--continue)
     fi
 
+    local plugin_flags=()
+    mapfile -t plugin_flags < <(_plugin_dir_flags "$superpowers_dir" "$factory_gates_dir")
+
     (
         cd "$project_dir"
         timeout 300 claude -p "$prompt" \
             "${continue_flag[@]+"${continue_flag[@]}"}" \
-            --plugin-dir "$superpowers_dir" \
-            --plugin-dir "$factory_gates_dir" \
+            "${plugin_flags[@]}" \
             --dangerously-skip-permissions \
             --max-turns 3 \
             --output-format stream-json \
