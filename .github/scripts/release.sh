@@ -154,9 +154,25 @@ PR_URL="$(gh pr create --title "chore(release): v${NEXT_VERSION}" --base main --
 echo "Release PR: $PR_URL"
 
 echo "Waiting for required checks on the release PR..."
-if ! gh pr checks "$RELEASE_BRANCH" --watch --fail-fast; then
+CHECKS_OK=0
+for attempt in 1 2 3 4 5 6; do
+    if CHECKS_OUTPUT="$(gh pr checks "$RELEASE_BRANCH" --watch --fail-fast 2>&1)"; then
+        echo "$CHECKS_OUTPUT"
+        CHECKS_OK=1
+        break
+    fi
+    echo "$CHECKS_OUTPUT"
+    if printf '%s' "$CHECKS_OUTPUT" | grep -q "no checks reported"; then
+        echo "Checks not registered yet (attempt $attempt/6) -- retrying in 5s..."
+        sleep 5
+        continue
+    fi
+    break
+done
+
+if [ "$CHECKS_OK" != "1" ]; then
     echo "" >&2
-    echo "ERROR: required checks failed on the release PR ($PR_URL)." >&2
+    echo "ERROR: required checks failed (or never appeared) on the release PR ($PR_URL)." >&2
     echo "Not merging, not tagging, not releasing. Fix the failure, then either" >&2
     echo "push a fix to $RELEASE_BRANCH or close the PR and re-run this workflow." >&2
     rm -f "$NOTES_FILE"
