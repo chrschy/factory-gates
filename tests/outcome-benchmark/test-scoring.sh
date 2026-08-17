@@ -68,6 +68,17 @@ EOF
 assert_eq "failures and errors both subtracted" "3 5" "$(parse_unittest_output "$TMPFILE")"
 
 cat > "$TMPFILE" <<'EOF'
+test_create_then_redirect (acceptance_tests.AcceptanceTests.test_create_then_redirect) ... ok
+test_unknown_code_returns_404 (acceptance_tests.AcceptanceTests.test_unknown_code_returns_404) ... skipped 'not applicable'
+
+----------------------------------------------------------------------
+Ran 2 tests in 0.014s
+
+OK (skipped=1)
+EOF
+assert_eq "skipped only, no failures -> passed == total" "2 2" "$(parse_unittest_output "$TMPFILE")"
+
+cat > "$TMPFILE" <<'EOF'
 Traceback (most recent call last):
   File "acceptance_tests.py", line 4, in <module>
     import nonexistent_module

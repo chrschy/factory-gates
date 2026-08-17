@@ -18,7 +18,7 @@ Implement the plan at $plan_path completely, in this repository. The approved sp
 - GET /<code> for an unknown code -> 404
 - The service must be startable from the project root with exactly: python3 serve.py, listening on port 8000.
 
-Implement real, working behavior -- not stubs. When finished, confirm the server starts cleanly with that exact command.
+Implement real, working behavior -- not stubs. When finished, confirm the server starts cleanly with that exact command, then stop it -- do not leave any server process (including one started to verify it works) running in the background, since the harness starts its own server separately afterward for scoring.
 PROMPT_EOF
 }
 
@@ -28,11 +28,21 @@ PROMPT_EOF
 # 40, wrapped in `timeout 1800`. Prints "true" to stdout if
 # <project-dir>/serve.py exists after the call returns, else "false" --
 # an existence check only, not proof the server works.
+#
+# <log-file> is resolved to an absolute path before the internal `cd
+# <project-dir>` so a relative path passed in resolves against the
+# caller's cwd, not <project-dir> (otherwise the log would land inside
+# the trial's project directory, visible/committable by the implementing
+# agent).
 run_execution_step() {
     local project_dir="$1"
     local plan_path="$2"
     local spec_path="$3"
     local log_file="$4"
+    case "$log_file" in
+        /*) ;;
+        *) log_file="$(pwd)/$log_file" ;;
+    esac
 
     local prompt
     prompt="$(_build_execution_prompt "$plan_path" "$spec_path")"
