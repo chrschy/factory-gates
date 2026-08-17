@@ -81,7 +81,7 @@ for i in "${!TURNS[@]}"; do
 done
 
 PLAN_PATH="$(find "$PROJECT_DIR/docs/superpowers/plans" -name '*.md' -print -quit 2>/dev/null || true)"
-SPEC_PATH="$(find "$PROJECT_DIR/docs/superpowers/specs" -name '*-design.md' -print -quit 2>/dev/null || true)"
+SPEC_PATH="$(find "$PROJECT_DIR/docs/superpowers/specs" -name '*-design.md' ! -name '*-program-design.md' -print -quit 2>/dev/null || true)"
 
 PLAN_FOUND=false
 if [ -n "$PLAN_PATH" ]; then
@@ -102,7 +102,8 @@ if [ "$PLAN_FOUND" = "true" ] && [ "$SPEC_FOUND" = "true" ]; then
     if [ "$SERVE_PY_EXISTS" = "true" ]; then
         EXECUTION_COMPLETED=true
         SCORE_LOG="$TRIAL_DIR/acceptance-test-output.txt"
-        read -r TESTS_PASSED TESTS_TOTAL <<< "$(run_acceptance_tests "$PROJECT_DIR" "$SCORE_LOG")"
+        SERVER_LOG="$TRIAL_DIR/server.log"
+        read -r TESTS_PASSED TESTS_TOTAL <<< "$(run_acceptance_tests "$PROJECT_DIR" "$SCORE_LOG" "$SERVER_LOG")"
         TESTS_PASSED="${TESTS_PASSED:-0}"
         TESTS_TOTAL="${TESTS_TOTAL:-0}"
     fi
@@ -117,23 +118,37 @@ if [ "$PLAN_FOUND" = "true" ] && [ "$SPEC_FOUND" = "true" ] && [ "$EXECUTION_COM
     fi
 fi
 
-cat > "$TRIAL_DIR/result.json" <<EOF
-{
-  "trial_dir": "$TRIAL_DIR",
-  "condition": "$CONDITION",
-  "brainstorming_triggered": $BRAINSTORMING_TRIGGERED,
-  "architecture_gate_triggered": $ARCHITECTURE_GATE_TRIGGERED,
-  "program_design_gate_triggered": $PROGRAM_DESIGN_GATE_TRIGGERED,
-  "vertical_slices_gate_triggered": $VERTICAL_SLICES_GATE_TRIGGERED,
-  "plan_found": $PLAN_FOUND,
-  "plan_path": "${PLAN_PATH:-}",
-  "execution_completed": $EXECUTION_COMPLETED,
-  "tests_passed": $TESTS_PASSED,
-  "tests_total": $TESTS_TOTAL,
-  "turns_used": $TURNS_USED,
-  "outcome": "$OUTCOME"
-}
-EOF
+jq -n \
+    --arg trial_dir "$TRIAL_DIR" \
+    --arg condition "$CONDITION" \
+    --argjson brainstorming_triggered "$BRAINSTORMING_TRIGGERED" \
+    --argjson architecture_gate_triggered "$ARCHITECTURE_GATE_TRIGGERED" \
+    --argjson program_design_gate_triggered "$PROGRAM_DESIGN_GATE_TRIGGERED" \
+    --argjson vertical_slices_gate_triggered "$VERTICAL_SLICES_GATE_TRIGGERED" \
+    --argjson plan_found "$PLAN_FOUND" \
+    --arg plan_path "${PLAN_PATH:-}" \
+    --arg spec_path "${SPEC_PATH:-}" \
+    --argjson execution_completed "$EXECUTION_COMPLETED" \
+    --argjson tests_passed "$TESTS_PASSED" \
+    --argjson tests_total "$TESTS_TOTAL" \
+    --argjson turns_used "$TURNS_USED" \
+    --arg outcome "$OUTCOME" \
+    '{
+        trial_dir: $trial_dir,
+        condition: $condition,
+        brainstorming_triggered: $brainstorming_triggered,
+        architecture_gate_triggered: $architecture_gate_triggered,
+        program_design_gate_triggered: $program_design_gate_triggered,
+        vertical_slices_gate_triggered: $vertical_slices_gate_triggered,
+        plan_found: $plan_found,
+        plan_path: $plan_path,
+        spec_path: $spec_path,
+        execution_completed: $execution_completed,
+        tests_passed: $tests_passed,
+        tests_total: $tests_total,
+        turns_used: $turns_used,
+        outcome: $outcome
+    }' > "$TRIAL_DIR/result.json"
 
 echo "Trial complete: condition=$CONDITION outcome=$OUTCOME tests=$TESTS_PASSED/$TESTS_TOTAL turns_used=$TURNS_USED"
 echo "Result: $TRIAL_DIR/result.json"
