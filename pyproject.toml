@@ -1,6 +1,11 @@
 [tool.ruff]
 target-version = "py39"
 line-length = 100
+# Ruff 0.16+ formats Python code fences embedded in Markdown by default.
+# Excluded here since this repo's docs/superpowers/ specs and plans are
+# historical records, not live code -- they should never be rewritten to
+# satisfy a formatter.
+extend-exclude = ["*.md"]
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "W", "C901"]
