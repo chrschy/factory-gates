@@ -3,3 +3,4 @@
 .superpowers/
 .claude/dogfooding-notes/
 .worktrees/
+__pycache__/
