@@ -1,7 +1,7 @@
 {
   "name": "factory-gates",
   "description": "Adds Dex Horthy's 4-gate model (Product, Architecture, Program Design, Vertical Slices) as explicit human-approval checkpoints on top of Superpowers — non-invasive, does not modify Superpowers' own files.",
-  "version": "0.3.0",
+  "version": "1.0.0",
   "author": {
     "name": "Christopher Schymura"
   },

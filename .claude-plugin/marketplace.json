@@ -8,7 +8,7 @@
     {
       "name": "factory-gates",
       "description": "Dex Horthy's 4-gate model (Product, Architecture, Program Design, Vertical Slices) as explicit approval checkpoints on top of Superpowers.",
-      "version": "0.3.0",
+      "version": "1.0.0",
       "source": "./"
     }
   ]
