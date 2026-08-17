@@ -14,7 +14,7 @@ New `pyproject.toml` at repo root — config only, no `[project]`/`[build-system
 ```toml
 [tool.ruff]
 target-version = "py39"
-line-length = 88
+line-length = 100
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "W", "C901"]
