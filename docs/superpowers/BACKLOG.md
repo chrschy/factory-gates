@@ -58,13 +58,16 @@ shortener — and drive it through the full pipeline: `brainstorming` →
 confusing, or actually valuable along the way — that's the real signal
 this whole effort has been trying to measure.
 
+## Recently completed
+
+- **Superpowers-vs-factory-gates outcome benchmark** — shipped in
+  `tests/outcome-benchmark/`. Design docs:
+  `docs/superpowers/specs/2026-08-16-outcome-benchmark-design.md`,
+  `-architecture.md`, `-program-design.md`, and
+  `docs/superpowers/plans/2026-08-16-outcome-benchmark.md`.
+
 ## Also remaining (lower priority, not blocking 1.0)
 
-- **Superpowers-vs-factory-gates outcome benchmark** — unblocked now
-  that all three `tests/gate-quality/*/` suites exist (architecture-gate,
-  program-design-gate, vertical-slices-gate). Needs its own design: what
-  "outcome" means to compare, what counts as a fair baseline run without
-  factory-gates.
 - **Maintainability gate (Gate 5)** — static analysis (complexity,
   duplication, coupling, coverage) before/after `writing-plans`. Not yet
   spec'd; originally a "note for later" idea, not yet brainstormed.

@@ -15,6 +15,9 @@ jobs:
       - name: Run release version-calc tests
         run: tests/release/test-version-calc.sh
 
+      - name: Run gate-routing common.sh unit tests
+        run: tests/gate-routing/test-common.sh
+
       - name: Run architecture-gate judge unit tests
         run: tests/gate-quality/architecture-gate/test-judge.sh
 
@@ -23,6 +26,12 @@ jobs:
 
       - name: Run vertical-slices-gate judge unit tests
         run: tests/gate-quality/vertical-slices-gate/test-judge.sh
+
+      - name: Run outcome-benchmark scoring unit tests
+        run: tests/outcome-benchmark/test-scoring.sh
+
+      - name: Run outcome-benchmark execute.sh unit tests
+        run: tests/outcome-benchmark/test-execute.sh
 
   secrets-scan:
     runs-on: ubuntu-latest
