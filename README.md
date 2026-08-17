@@ -1,9 +1,17 @@
-# factory-gates
+<p align="center">
+  <img alt="factory-gates" src="docs/assets/logo.png" width="220">
+</p>
 
-<p>
+<h3 align="center">
+Human-approved checkpoints for Superpowers' planning flow
+</h3>
+
+<p align="center">
   <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-yellow.svg" alt="License: MIT"></a>
   <a href="https://github.com/obra/superpowers"><img src="https://img.shields.io/badge/requires-Superpowers-8A2BE2" alt="Requires Superpowers"></a>
 </p>
+
+---
 
 An add-on plugin for [Superpowers](https://github.com/obra/superpowers) that inserts Dex Horthy's (HumanLayer) 4-gate model — **Product → Architecture → Program Design → Vertical Slices** — as explicit, human-approved checkpoints into the Superpowers planning flow.
 
